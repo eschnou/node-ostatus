@@ -14,6 +14,12 @@ Requirements
 - [node-o3-xml](https://github.com/ajaxorg/node-o3-xml/)
 - [Mu](https://github.com/raycmorgan/Mu/tree/v2) the v2 branch
 
+Install
+-------
+
+If you are using npm (the node packet manager), installing is as easy as:
+    npm install ostatus
+
 Documentation
 -------------
 
