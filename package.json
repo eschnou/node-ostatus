@@ -1,0 +1,11 @@
+{ "name" : "ostatus"
+, "description" : "An implementation of the OStatus protocol stack for nodejs."
+, "engines": { "node" : ">=0.3.8-pre < 4.0.0" }
+, "version": "v0.1.0"
+, "keywords": ["ostatus", "hcard", "pubsubhubbub", "atom", "activity", "salmon"]
+, "homepage": "http://github.com/eschnou/node-ostatus"
+, "author": "Laurent Eschenauer <laurent@eschenauer.be> (http://eschnou.com)"
+, "bin" : { "status" : "./bin/status.js", "profile": "./bin/profile.js", "wfinger": "./bin/wfinger.js"}
+, "main" : "./lib/ostatus"
+, "repository" : { "type": "git", "url": "https://github.com/eschnou/node-ostatus.git"}
+}
