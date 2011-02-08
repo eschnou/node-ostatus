@@ -19,26 +19,28 @@ Documentation
 
 This is high on the todo list. For now, you'll have to look into the code to discover the API. You can also have a look at the command line tools to see some basic usages.
 
-Status
-------
+Progress
+--------
 
 The following pieces of the protocol are implemented:
-- [webfinger](http://code.google.com/p/webfinger/): 
-  * Lookup a user account and return the user meta in a JSON format
-  * Rendering of host/user meta based on a JSON input object
-- [pubsubhubbub](http://code.google.com/p/pubsubhubbub/): 
-  * Subscribe/Unsubscribe to a topic on another hub
-  * Verify a subscription request from an other hub
-  * Distribute content to subscribers (with support for authenticated content distribution)
-- [hcard](http://microformats.org/wiki/hcard):
-  * Lookup and parse a hcard into a JSON object
-  * Render an hcard from a JSON object
-- [activitystreams](http://activitystrea.ms/):
-  * Fetch an atom feed with activitystream content and return a JSON representation of the stream. The JSON object is a valid activitystream JSON object.
-  * Render an atom feed from an array of activities in JSON
+
+-  [webfinger](http://code.google.com/p/webfinger/): 
+   * Lookup a user account and return the user meta in a JSON format
+   * Rendering of host/user meta based on a JSON input object
+-  [pubsubhubbub](http://code.google.com/p/pubsubhubbub/): 
+   * Subscribe/Unsubscribe to a topic on another hub
+   * Verify a subscription request from an other hub
+   * Distribute content to subscribers (with support for authenticated content distribution)
+-  [hcard](http://microformats.org/wiki/hcard):
+   * Lookup and parse a hcard into a JSON object
+   * Render an hcard from a JSON object
+-  [activitystreams](http://activitystrea.ms/):
+   * Fetch an atom feed with activitystream content and return a JSON representation of the stream. The JSON object is a valid activitystream JSON object.
+   * Render an atom feed from an array of activities in JSON
 
 What is missing:
-- [salmon](http://www.salmon-protocol.org/)
+
+-  [salmon](http://www.salmon-protocol.org/)
 
 Client
 ------
