@@ -1,5 +1,3 @@
-#!/usr/local/bin/node
-
 /*
  * node-ostatus - An implementation of OStatus for node.js
  * 
