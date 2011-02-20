@@ -2,7 +2,7 @@
 <feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:georss="http://www.georss.org/georss" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:media="http://purl.org/syndication/atommedia" xmlns:poco="http://portablecontacts.net/spec/1.0" xmlns:ostatus="http://ostatus.org/schema/1.0" xmlns:statusnet="http://status.net/schema/api/1/">
  <id>http://{{host}}/updates/{{username}}.atom</id>
  <title>Latest updates from {{fullname}}</title>
- <updated>2011-01-10T21:29:19+00:00</updated>
+ <updated>{{updated}}</updated>
  <link rel="alternate" href="http://{{host}}/users/{{username}}" type="text/html"/>
  <link rel="hub" href="http://{{host}}/push/hub" />
  <link rel="salmon" href="http://{{host}}/salmon/user/{{username}}" />
