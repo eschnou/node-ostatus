@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
  * node-ostatus - An implementation of OStatus for node.js
  * 
