@@ -7,18 +7,23 @@ An implementation of the [OStatus](http://ostatus.org) protocol stack for node.j
 
 Copyright (C) 2010 Laurent Eschenauer <laurent@eschenauer.be>
 
-Requirements
-------------
-
-- [node](http://nodejs.org/) v0.3+ is required, I'm developing against trunk.
-- [node-o3-xml](https://github.com/ajaxorg/node-o3-xml/)
-- [Mu](https://github.com/raycmorgan/Mu/tree/v2) the v2 branch
-
 Install
 -------
 
 If you are using npm (the node packet manager), installing is as easy as:
     npm install ostatus
+
+
+Dependencies
+------------
+
+If you are using this from source, you can install the dependencies using npm from the root of the source folder:
+    npm bundle
+
+Or you can install all dependencies manually:
+- [node](http://nodejs.org/) v4+ is required, I'm developing against trunk.
+- [node-o3-xml](https://github.com/ajaxorg/node-o3-xml/)
+- [Mu](https://github.com/raycmorgan/Mu/tree/v2) the v2 branch
 
 Documentation
 -------------
