@@ -24,6 +24,7 @@
 */
 
 var Ostatus = require('ostatus'),
+	Util = require('util'),
 	Hcard = Ostatus.hcard,
 	Webfinger = Ostatus.webfinger;
 
@@ -57,14 +58,7 @@ var _result = function(error, result) {
 	if (error) {
 		_error(error);
 	} else {
-    	var links = result.documentElement.getElementsByTagName("Link");
-    	for (i=0;i<links.length;i++) {
-    		var attributes = links[i].attributes;
-    		var aHref = attributes.getNamedItem("href");
-    		var rel   = attributes.getNamedItem("rel");
-    		if (aHref != undefined && rel != undefined) 
-    			console.log(rel.nodeValue + ": " + aHref.nodeValue);
-    	}
+		console.log(Util.inspect(result));
 	}
 };
 
