@@ -42,17 +42,9 @@ var _main = function(argv) {
 	
 	// Wrap the request in a try.. catch to nicely die on errors
 	try {
-		Webfinger.lookup(identifier, function(err, result) {
-			if (err) _error(err);
-	    	var links = result.documentElement.getElementsByTagName("Link");
-	    	for (i=0;i<links.length;i++) {
-	    		var attributes = links[i].attributes;
-	    		var rel = attributes.getNamedItem("rel");
-	    		if (rel.nodeValue == "http://microformats.org/profile/hcard") {
-	    			var href = attributes.getNamedItem("href");
-	    			Hcard.lookup(href.nodeValue, _result);
-	    		}
-	    	}
+		Ostatus.profile(argv[2], function(err, result) {
+			if (err) return _error(err);
+			_result(result);
 		}); 
 	} catch (error) {
 		_error(error);
@@ -64,15 +56,11 @@ var _error = function(error) {
 	process.exit(-1);
 }; 
 
-var _result = function(error, result) {
-	if (error) {
-		_error(error);
-	} else {
-    	if (result != undefined) {
-    		for(key in result) {
-    			console.log(key + ": " + result[key]);
-    		}
-    	}
+var _result = function(result) {
+	if (result != undefined) {
+		for(key in result) {
+			console.log(key + ": " + result[key]);
+		}
 	}
 };
 
