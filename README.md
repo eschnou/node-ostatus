@@ -21,14 +21,14 @@ If you are using this from source, you can install the dependencies using npm fr
     npm bundle
 
 Or you can install all dependencies manually:
-- [node](http://nodejs.org/) v4+ is required, I'm developing against trunk.
-- [node-o3-xml](https://github.com/ajaxorg/node-o3-xml/)
-- [Mu](https://github.com/raycmorgan/Mu/tree/v2) the v2 branch
+* [node](http://nodejs.org/) v4+ is required, I'm developing against trunk.
+* [node-o3-xml](https://github.com/ajaxorg/node-o3-xml/)
+* [Mu](https://github.com/raycmorgan/Mu/tree/v2) the v2 branch
 
 Documentation
 -------------
 
-The API is documented in the [[wiki | http://github.com/eschnou/node-ostatus/wiki]]. 
+The API is documented in the [wiki](http://github.com/eschnou/node-ostatus/wiki). 
 
 Progress
 --------
