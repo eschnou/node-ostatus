@@ -60,13 +60,13 @@ In the bin/ folder, you'll find a few simple command line clients for ostatus.
 
 ### Status
 Display the last status update of someone:
-	./status evan@identi.ca
+	node ./bin/status.js evan@identi.ca
 	2010-12-14T19:29:07+00:00
 	RT @support Repetitive email notifications are fixed now. Our apologies for the inconvenience.     
 
 ### Profile
 Display the profile of someone
-	./profile evan@identi.ca
+	node ./bin/profile.js evan@identi.ca
 	photo: http://avatar.identi.ca/1-96-20100903013814.jpeg
 	nickname: evan
 	fn: Evan Prodromou
