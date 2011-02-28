@@ -28,7 +28,7 @@ Or you can install all dependencies manually:
 Documentation
 -------------
 
-This is high on the todo list. For now, you'll have to look into the code to discover the API. You can also have a look at the command line tools to see some basic usages.
+The API is documented in the [[wiki | http://github.com/eschnou/node-ostatus/wiki]]. 
 
 Progress
 --------
