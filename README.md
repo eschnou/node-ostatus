@@ -23,11 +23,11 @@ If you are using this from source, you can install the dependencies using npm fr
     npm bundle
 
 Or you can install all dependencies manually:
-* [node](http://nodejs.org/) v4+ is required, I'm developing against trunk.
-* [node-o3-xml](https://github.com/ajaxorg/node-o3-xml/)
-* [Mu](https://github.com/raycmorgan/Mu/tree/v2) the v2 branch
-* [Flow](https://github.com/willconant/flow-js)
-* [Base64](https://github.com/pkrumins/node-base64)
+*  [node](http://nodejs.org/) v4+ is required, I'm developing against trunk.
+*  [node-o3-xml](https://github.com/ajaxorg/node-o3-xml/)
+*  [Mu](https://github.com/raycmorgan/Mu/tree/v2) the v2 branch
+*  [Flow](https://github.com/willconant/flow-js)
+*  [Base64](https://github.com/pkrumins/node-base64)
 
 Documentation
 -------------
