@@ -1,6 +1,6 @@
 { "name" : "ostatus"
 , "description" : "An implementation of the OStatus protocol stack for nodejs."
-, "engines": { "node" : ">=4.0.0" }
+, "engines": { "node" : ">=0.4.0" }
 , "version": "v0.1.0"
 , "keywords": ["ostatus", "hcard", "pubsubhubbub", "atom", "activity", "salmon"]
 , "homepage": "http://github.com/eschnou/node-ostatus"
