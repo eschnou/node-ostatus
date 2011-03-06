@@ -61,6 +61,7 @@ var _result = function(result) {
 		for(key in result) {
 			console.log(key + ": " + result[key]);
 		}
+		console.log(result);
 	}
 };
 

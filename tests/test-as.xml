@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xml:lang="en-US" xmlns="http://www.w3.org/2005/Atom" xmlns:thr="http://purl.org/syndication/thread/1.0" xmlns:georss="http://www.georss.org/georss" xmlns:activity="http://activitystrea.ms/spec/1.0/" xmlns:media="http://purl.org/syndication/atommedia" xmlns:poco="http://portablecontacts.net/spec/1.0" xmlns:ostatus="http://ostatus.org/schema/1.0" xmlns:statusnet="http://status.net/schema/api/1/">
+ <id>http://http://example.com/updates/eschnou.atom</id>
+ <title>Latest updates from Laurent Eschenauer</title>
+ <updated>2011-03-06T15:02:56</updated>
+ <link rel="alternate" href="http://http://example.com/users/eschnou" type="text/html"/>
+ <link rel="hub" href="http://http://example.com/push/hub" />
+ <link rel="salmon" href="http://http://example.com/salmon/user/eschnou" />
+ <link rel="self" href="http://http://example.com/updates/eschnou.atom" type="application/atom+xml"/> 
+ <author>
+  <name>Laurent Eschenauer</name>
+  <uri>http://http://example.com/users/eschnou</uri>
+ </author>
+ <activity:subject>
+  <activity:object-type>http://activitystrea.ms/schema/1.0/person</activity:object-type>
+  <id>http://http://example.com/users/eschnou</id>
+  <title>Laurent Eschenauer</title>
+  <link rel="alternate" type="text/html" href="http://http://example.com/users/eschnou"/>
+  <link rel="avatar" type="image/jpeg" media:width="73" media:height="73" href="http://shoutr.org/avatar/eschnou.jpg"/>
+  <poco:preferredUsername>eschnou</poco:preferredUsername>
+  <poco:displayName>Laurent Eschenauer</poco:displayName>
+  <poco:note></poco:note>
+  <poco:address>
+   <poco:formatted></poco:formatted>
+  </poco:address>
+ </activity:subject>
+
+ <entry>
+  <id>tag:eschnou@shoutr.org,2011-03-06:FKZbF1nx</id>
+  <updated>2011-03-06T15:02:56</updated>
+  <title>Hello, World</title>
+  <content type="html">Hello, &lt;b&gt;World&lt;/b&gt;</content>
+  <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
+  <activity:object-type>http://activitystrea.ms/schema/1.0/note</activity:object-type>
+ </entry>
+
+ <entry>
+  <id>tag:eschnou@shoutr.org,2011-03-07:FKdgfF1nx</id>
+  <updated>2011-03-07T09:02:56</updated>
+  <title>Another one for the road.</title>
+  <content type="html">Another one for the road.</content>
+  <activity:verb>http://activitystrea.ms/schema/1.0/post</activity:verb>
+  <activity:object-type>http://activitystrea.ms/schema/1.0/note</activity:object-type>
+ </entry>
+
+</feed>   
+

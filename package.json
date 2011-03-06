@@ -5,7 +5,7 @@
 , "keywords": ["ostatus", "hcard", "pubsubhubbub", "atom", "activity", "salmon"]
 , "homepage": "http://github.com/eschnou/node-ostatus"
 , "author": "Laurent Eschenauer <laurent@eschenauer.be> (http://eschnou.com)"
-, "bin" : { "status" : "./bin/status.js", "profile": "./bin/profile.js", "wfinger": "./bin/wfinger.js"}
+, "bin" : { "status" : "./bin/status.js", "profile": "./bin/profile.js", "webfinger": "./bin/webfinger.js"}
 , "main" : "./lib/ostatus"
 , "repository" : { "type": "git", "url": "https://github.com/eschnou/node-ostatus.git"}
 , "dependencies" : {
