@@ -1,7 +1,7 @@
 { "name" : "ostatus"
 , "description" : "An implementation of the OStatus protocol stack for nodejs."
 , "engines": { "node" : ">=4.0.0" }
-, "version": "v0.1.0pre"
+, "version": "v0.1.0"
 , "keywords": ["ostatus", "hcard", "pubsubhubbub", "atom", "activity", "salmon"]
 , "homepage": "http://github.com/eschnou/node-ostatus"
 , "author": "Laurent Eschenauer <laurent@eschenauer.be> (http://eschnou.com)"
@@ -12,5 +12,6 @@
     "mu" 	: "http://socialjs.org/dependencies/mu.tgz"
    ,"o3-xml" 	: "http://socialjs.org/dependencies/o3-xml.tgz"
    ,"flow"	: "0.2.x"
+   ,"base64" : "2.0.x"
   }
 }

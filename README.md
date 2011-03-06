@@ -3,9 +3,11 @@ node-ostatus
 
 An implementation of the [OStatus](http://ostatus.org) protocol stack for node.js
 
-*** Ongoing development on the master branch until I reach a first stable 0.1 release ***
-
 Copyright (C) 2010 Laurent Eschenauer <laurent@eschenauer.be>
+
+Version 0.1.0 - Released March 6th 2011.
+
+** This is a very early release. Do not even think about using this code in production... yet :-)** 
 
 Install
 -------
@@ -24,11 +26,48 @@ Or you can install all dependencies manually:
 * [node](http://nodejs.org/) v4+ is required, I'm developing against trunk.
 * [node-o3-xml](https://github.com/ajaxorg/node-o3-xml/)
 * [Mu](https://github.com/raycmorgan/Mu/tree/v2) the v2 branch
+* [Flow](https://github.com/willconant/flow-js)
+* [Base64](https://github.com/pkrumins/node-base64)
 
 Documentation
 -------------
 
 The API is documented in the [wiki](http://github.com/eschnou/node-ostatus/wiki). 
+
+Support
+-------
+
+Please avoid sending an email directly to me. Instead, involve also other users by:
+
+-  Filling an issue report in the [issue tracker](https://github.com/eschnou/node-ostatus/issues).
+-  Asking your question on the [Ostatus](http://groups.google.com/group/ostatus-discuss) or [NodeJS](http://groups.google.com/group/nodejs) mailing list.
+-  Ping me on twitter [@eschnou](http://twitter.com/eschnou) <== Ho irony :-) 
+
+Client
+------
+
+In the bin/ folder, you'll find a few simple command line clients for ostatus. If you install with NPM, 
+these will be linked and added to your path. 
+
+### Status
+Display the last status update of someone:
+	status eschnou@identi.ca
+
+Output:
+    2011-03-06T14:25:08+00:00
+    One day, I'll post these kind of updates from my own host. In the meanwhile, cheers !
+
+### Profile
+Display the profile of someone
+	profile eschnou@identi.ca
+	
+Output:
+    photo: 'http://avatar.identi.ca/16106-96-20080722053859.png',
+    nickname: 'eschnou',
+    fn: 'Laurent',
+    label: 'Liège, Belgium',
+    url: 'http://eschnou.com',
+    note: 'Coder, not blogger. Technology enthusiast. Exploring the future of the web & mobility.'
 
 Progress
 --------
@@ -48,31 +87,24 @@ The following pieces of the protocol are implemented:
 -  [activitystreams](http://activitystrea.ms/):
    * Fetch an atom feed with activitystream content and return a JSON representation of the stream. The JSON object is a valid activitystream JSON object.
    * Render an atom feed from an array of activities in JSON
+-  [salmon](http://www.salmon-protocol.org/)
+   * Unpacking envelope and base64url encoding/decoding 
 
 What is missing:
 
--  [salmon](http://www.salmon-protocol.org/)
+-  Magic envelope signature generation and verification.
+-  Activitystream stuff is basic and maybe outdated.
 
-Client
-------
 
-In the bin/ folder, you'll find a few simple command line clients for ostatus.
+My ToDo list
+------------
 
-### Status
-Display the last status update of someone:
-	node ./bin/status.js evan@identi.ca
-	2010-12-14T19:29:07+00:00
-	RT @support Repetitive email notifications are fixed now. Our apologies for the inconvenience.     
+-  Get rid of o3-xml and use a Sax parser instead.
+-  Get rid of the templates and generate the XML programaticaly.
+-  Write more test cases.
+-  Implement Salmon crypto stuff.
+-  Complete the activitystream stuff.
 
-### Profile
-Display the profile of someone
-	node ./bin/profile.js evan@identi.ca
-	photo: http://avatar.identi.ca/1-96-20100903013814.jpeg
-	nickname: evan
-	fn: Evan Prodromou
-	label: Montreal, Quebec, Canada
-	url: http://evan.status.net/
-	note: Montreal hacker and entrepreneur. Founder of identi.ca, lead developer of StatusNet, CEO of StatusNet Inc.
 
 License
 -------
