@@ -99,11 +99,12 @@ What is missing:
 My ToDo list
 ------------
 
+-  Implement Salmon crypto stuff.
+-  Complete the activitystream stuff.
+-  Lot's of edge cases and interop issues to fix.
 -  Get rid of o3-xml and use a Sax parser instead.
 -  Get rid of the templates and generate the XML programaticaly.
 -  Write more test cases.
--  Implement Salmon crypto stuff.
--  Complete the activitystream stuff.
 
 
 License
