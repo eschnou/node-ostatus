@@ -5,9 +5,7 @@ An implementation of the [OStatus](http://ostatus.org) protocol stack for node.j
 
 Copyright (C) 2010 Laurent Eschenauer <laurent@eschenauer.be>
 
-Version 0.1.0 - Released March 6th 2011.
-
-** This is a very early release. Do not even think about using this code in production... yet :-)** 
+** Ongoing development branch, unstable code, use at your own risk :-) **
 
 Install
 -------
