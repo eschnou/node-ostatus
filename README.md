@@ -43,6 +43,25 @@ Please avoid sending an email directly to me. Instead, involve also other users 
 -  Asking your question on the [Ostatus](http://groups.google.com/group/ostatus-discuss) or [NodeJS](http://groups.google.com/group/nodejs) mailing list.
 -  Ping me on twitter [@eschnou](http://twitter.com/eschnou) <== Ho irony :-) 
 
+Contribute
+----------
+
+Want to help ? That's awesome ! I'm doing this just a couple hours a week, between a full-time job 
+and a six months old baby :-) So, of course, any help is welcome ! What you can do:
+
+-  Try it out. With the command line, or in a project, and let me know what works, what does not. We need
+to get the interoperability right. Probably a lot of edge cases remain to be solved.
+-  Use it in a project and provide feedback on the API. Does it fit you need ? What else do you need ?
+If the documentation is weak, don't hesitate to edit the wiki and make it better.
+-  Want to add a feature or refactor some code (see the todo list below). Then the best is to first get in 
+touch with me, since I'm actively working on it, you don't want to waste your time on something I did already. 
+
+I accept pull-requests, but would appreciate if:
+
+-  You package it on a separate feature branch and make sure it is rebased on top of the dev branch.
+-  Do not merge the upstream with your work, instead you should rebase your work on top of the upstream.
+-  Use one branch for one feature.
+
 Client
 ------
 
@@ -99,12 +118,22 @@ What is missing:
 My ToDo list
 ------------
 
--  Implement Salmon crypto stuff.
--  Complete the activitystream stuff.
+-  Implement Salmon crypto stuff. Unfortunately the node crypto lib is not enough, 
+and a new RSA lib is required. Either full javascript or C++
+-  Complete the activitystream stuff, ensuring mapping between XML and internal 
+JSON data structure.
 -  Lot's of edge cases and interop issues to fix.
 -  Get rid of o3-xml and use a Sax parser instead.
 -  Get rid of the templates and generate the XML programaticaly.
 -  Write more test cases.
+
+
+Acknowledgments
+---------------
+This code is a 100% rewrite by myself, however:
+
+-  The idea of using Mustache templates for OStatus payload come from the [ostatus-js](https://github.com/maxogden/ostatus-js) project by maxodgen.
+-  The webfinger implementation is inspired by the [node-webfinger](https://github.com/banksean/node-webfinger) implementation of banksean.
 
 
 License
