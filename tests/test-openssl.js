@@ -2,7 +2,6 @@ var assert=require('assert');
 var fs=require('fs');
 var path=require('path');
 var ostatus=require('ostatus');
-var rsa=require('rsa');
 
 /*
  * Test interoperability with an OpenSSL signed salmon magic enveloppe.

@@ -2,7 +2,6 @@ var assert=require('assert');
 var fs=require('fs');
 var path=require('path');
 var ostatus=require('ostatus');
-var rsa=require('rsa');
 
 /*
  * Test interoperability with a Status.net signed salmon magic enveloppe.
@@ -12,7 +11,7 @@ function test(){
 	assert.ok(ostatus.salmon.verify_signature(me, key));
 }
 
-var expected = { 
+var me = { 
 		sigs: [ 
 		        { value: 'UqKwh0XSOhdSD7U9nVHxB67sCNt8lQzkl5aPELQTfuhrlBoktbExhhkP4QGFg0WS0FgPnQpG24z5S4XIk2BTjI8My-VlwRWdeU72NtnLhZjz8EzA1aJTI_Drs71-YICuM_dLAJgo55pF4nIMkRN9KA-rS-y7oC3cwt01MknR8UQ=' } 
 		      ],

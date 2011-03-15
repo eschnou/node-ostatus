@@ -13,5 +13,6 @@
    ,"o3-xml" 	: "http://files.eschnou.com/o3-xml.tgz"
    ,"flow"	: "0.2.x"
    ,"base64" : "2.0.x"
+   ,"bignumber" : "1.1.x"
   }
 }
