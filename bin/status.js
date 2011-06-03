@@ -49,11 +49,12 @@ var _error = function(error) {
 	process.exit(-1);
 };
 
-var _result = function(result) {
-	if (result != undefined) {
-		var item = result.items[0];
-		var time = item['postedTime'];
-		var title = item['title'];
+var _result = function(feed) {
+	console.log(feed);
+	if (feed) {
+		var entry = feed.entries[0];
+		var time = entry['updated'];
+		var title = entry['title'];
 		console.log(time + "\n" + title);
 	}
 };
