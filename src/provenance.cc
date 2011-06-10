@@ -94,7 +94,7 @@ static Handle<Value> Generate(const Arguments &args) {
   Handle<Value> privateKey = Null();
   BIO *bp = BIO_new(BIO_s_mem());
   if (PEM_write_bio_RSAPrivateKey(bp, rsa, NULL, NULL, 0, NULL, NULL)) {
-    privateKey = scope.Close(BIOToBinary(bp));
+    privateKey = BIOToBinary(bp);
   }
   BIO_free(bp);
   RSA_free(rsa);
