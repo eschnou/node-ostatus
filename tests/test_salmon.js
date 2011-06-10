@@ -6,6 +6,7 @@ Vows.describe('Salmon').addBatch({
 
     generate: {
 	'should work': {
+		// TODO: topics return instead of callback
 		topic: function() {
 		    this.key = Salmon.generateKeys();
 		    this.callback();

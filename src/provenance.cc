@@ -37,11 +37,10 @@ static BIO *binaryToBIO(Handle<Value> &bin) {
   } else {
     ssize_t len = DecodeBytes(bin);
     if (len >= 0) {
-      char *buf = new char[len];
+      char buf[len];
       len = DecodeWrite(buf, len, bin);
       // TODO: assert !res
       BIO_write(bp, buf, len);
-      delete[] buf;
     } else {
       BIO_free(bp);
       return NULL;
@@ -61,14 +60,13 @@ static Handle<Value> bnToBinary(BIGNUM *bn) {
   if (!bn) return Null();
   Handle<Value> result;
 
-  unsigned char *data = new unsigned char[BN_num_bytes(bn)];
+  unsigned char data[BN_num_bytes(bn)];
   int len = BN_bn2bin(bn, data);
   if (len > 0) {
     result = makeBuffer(data, len);
   } else {
     result = Null();
   }
-  delete[] data;
 
   return result;
 }
@@ -84,10 +82,9 @@ static BIGNUM *binaryToBn(Handle<Value> &bin) {
   } else {
     ssize_t len = DecodeBytes(bin);
     if (len >= 0) {
-      unsigned char *buf = new unsigned char[len];
+      unsigned char buf[len];
       len = DecodeWrite((char *)buf, len, bin);
       result = BN_bin2bn(buf, len, NULL);
-      delete[] buf;
     }
   }
 
@@ -137,16 +134,23 @@ static Handle<Value> Generate(const Arguments &args) {
 /**
  * Do not forget freeing result BIO
  * @param k Modulus (n) byte count
+ *
+ * 1. Let hash = the SHA256 hash digest of M
+ * 2. Let prefix = the constant byte sequence [0x30, 0x31, 0x30, 0xd, 0x6, 0x9, 0x60, 0x86, 0x48, 0x1, 0x65, 0x3, 0x4, 0x2, 0x1, 0x5, 0x0, 0x4, 0x20]
+ * 3. Let k = the number of bytes in the public key modulus
+ * 4. Let padding = '\xFF' repeated (k - length(prefix+hash) - 3) times
+ * 5. Let emsa = '\x00' + '\x01' + padding + '\x00' + prefix + hash
+ * (6. RSA sign the emsa byte sequence)
  */
 static BIO *EMSA_PKCS1_v1_5(Handle<Object> m, int k) {
-  const int hashLen = 256 / 8;
+  const int hashLen = SHA256_DIGEST_LENGTH;
   const int prefixLen = 19;
 
   BIO *result = BIO_new(BIO_s_mem());
   BIO_write(result, "\x00\x01", 2);
 
   /* padding */
-  for(int i = 0; i < k - (prefixLen + hashLen); i++)
+  for(int i = 0; i < k - (prefixLen + hashLen) - 3; i++)
     BIO_write(result, "\xFF", 1);
   BIO_write(result, "\x00", 1);
 
@@ -156,11 +160,11 @@ static BIO *EMSA_PKCS1_v1_5(Handle<Object> m, int k) {
   BIO_write(result, prefix, prefixLen);
 
   ssize_t mLen = DecodeBytes(m);
-  unsigned char *mBuf = new unsigned char[mLen];
-  printf("hashing %i bytes from %X\n", mLen, mBuf);
+  unsigned char mBuf[mLen];
+  mLen = DecodeWrite((char *)mBuf, mLen, m);
+
   unsigned char mDigest[hashLen];
   SHA256(mBuf, mLen, mDigest);
-  delete[] mBuf;
   BIO_write(result, mDigest, hashLen);
 
   return result;
@@ -199,10 +203,14 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
   BIO *emsa = EMSA_PKCS1_v1_5(m, BN_num_bytes(rsa->n));
   unsigned char *emsaData;
   long emsaLen = BIO_get_mem_data(emsa, &emsaData);
+  printf("semsa(%i):", emsaLen);
+  for(int i=0; i < emsaLen;i++)
+    printf(" %02X",emsaData[i]);
+  printf("\n");
 
   int sigLen = RSA_size(rsa);
-  unsigned char sig[sigLen];
-  RSA_private_encrypt(emsaLen, emsaData, sig, rsa, RSA_NO_PADDING);
+  unsigned char sigBuf[sigLen];
+  RSA_private_encrypt(emsaLen, emsaData, sigBuf, rsa, RSA_NO_PADDING);
 
   BIO_free(emsa);
   EVP_PKEY_free(pkey);
@@ -211,10 +219,10 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
   for(int i=0; i < sigLen;i++)
     printf(" %02X",sig[i]);
     printf("\n");*/
-  Handle<Value> sigResult = makeBuffer(sig, sigLen);
+  Handle<Value> sig = makeBuffer(sigBuf, sigLen);
 
 
-  return scope.Close(sigResult);
+  return scope.Close(sig);
 }
 
 /**
@@ -231,6 +239,8 @@ static Handle<Value> VerifyRSASHA256(const Arguments &args) {
   }
   Handle<Object> m = args[0]->ToObject();
   Handle<Object> sig = args[1]->ToObject();
+  int sigLen = Buffer::Length(sig);
+  unsigned char *sigBuf = (unsigned char *)Buffer::Data(sig);
   Handle<Object> pubKey = args[2]->ToObject();
 
   /* Prepare key */
@@ -240,49 +250,35 @@ static Handle<Value> VerifyRSASHA256(const Arguments &args) {
   Handle<Value> e = pubKey->Get(String::NewSymbol("e"));
   rsa->e = binaryToBn(e);
 
-  /* Prepare data */
-  BIO *emsa = EMSA_PKCS1_v1_5(m, BN_num_bytes(rsa->n));
-  unsigned char *emsaData;
-  long emsaLen = BIO_get_mem_data(emsa, &emsaData);
-
+  /* Pass sig */
   int rsigLen = RSA_size(rsa);
   unsigned char rsigBuf[rsigLen];
-  RSA_public_decrypt(emsaLen, emsaData, rsigBuf, rsa, RSA_NO_PADDING);
-
-  BIO_free(emsa);
-  RSA_free(rsa);
-
-  /* Pass sig */
-  int sigLen = Buffer::Length(sig);
-  unsigned char *sigBuf = (unsigned char *)Buffer::Data(sig);
+  RSA_public_decrypt(sigLen, sigBuf, rsigBuf, rsa, RSA_NO_PADDING);
 
   printf("rsig(%i):", rsigLen);
   for(int i=0; i < rsigLen;i++)
     printf(" %02X",rsigBuf[i]);
   printf("\n");
-  printf("sig(%i):", sigLen);
+  /*printf("sig(%i):", sigLen);
   for(int i=0; i < sigLen;i++)
     printf(" %02X",sigBuf[i]);
+    printf("\n");*/
+
+  /* Compare to digest */
+  BIO *emsa = EMSA_PKCS1_v1_5(m, BN_num_bytes(rsa->n));
+  RSA_free(rsa);
+  unsigned char *emsaData;
+  long emsaLen = BIO_get_mem_data(emsa, &emsaData);
+  printf("vemsa(%i):", emsaLen);
+  for(int i=0; i < emsaLen;i++)
+    printf(" %02X",emsaData[i]);
   printf("\n");
 
-  int status = rsigLen == sigLen;
-  for(int i = 0; status && i < rsigLen; i++) {
-    if (sigBuf[i] != rsigBuf[i])
-      printf("%X != %X\n", sigBuf[i], rsigBuf[i]);
-    status &= sigBuf[i] == rsigBuf[i];
-  }
+  int status = rsigLen == emsaLen &&
+    memcmp(rsigBuf, emsaData, rsigLen) == 0;
+  BIO_free(emsa);
 
-  switch(status) {
-  case 1:
-    return scope.Close(True());
-    break;
-  case 0:
-    return scope.Close(False());
-    break;
-  default:
-    Local<Value> exception = Exception::Error(String::New("Verification error"));
-    return ThrowException(exception);
-  }
+  return scope.Close(status ? True() : False());
 }
 
 extern "C" void
