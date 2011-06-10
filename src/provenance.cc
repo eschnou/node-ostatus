@@ -2,9 +2,24 @@
 #include <node_buffer.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
+#include <cstring>
 
 using namespace v8;
 using namespace node;
+
+// http://sambro.is-super-awesome.com/2011/03/03/creating-a-proper-buffer-in-a-node-c-addon/
+static Handle<Value> makeBuffer(unsigned char *data, int length) {
+  HandleScope scope;
+
+  Buffer *slowBuffer = Buffer::New(length);
+  memcpy(Buffer::Data(slowBuffer), data, length);
+  Local<Object> globalObj = Context::GetCurrent()->Global();
+  Local<Function> bufferConstructor = Local<Function>::Cast(globalObj->Get(String::New("Buffer")));
+  Handle<Value> constructorArgs[3] = { slowBuffer->handle_, Integer::New(length), Integer::New(0) };
+  Local<Object> actualBuffer = bufferConstructor->NewInstance(3, constructorArgs);
+
+  return scope.Close(actualBuffer);
+}
 
 /**
  * Do not forget to call BIO_free() after use
@@ -49,7 +64,7 @@ static Handle<Value> bnToBinary(BIGNUM *bn) {
   unsigned char *data = new unsigned char[BN_num_bytes(bn)];
   int len = BN_bn2bin(bn, data);
   if (len > 0) {
-    result = Encode(data, len);
+    result = makeBuffer(data, len);
   } else {
     result = Null();
   }
@@ -166,7 +181,7 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
     Local<Value> exception = Exception::Error(String::New("Cannot sign"));
     return ThrowException(exception);
   }
-  Local<Value> sigResult = Encode(sig, sigLen);
+  Handle<Value> sigResult = makeBuffer(sig, sigLen);
 
   EVP_PKEY_free(pkey);
   delete[] sig;
@@ -175,6 +190,11 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
   return scope.Close(sigResult);
 }
 
+/**
+ * @param Message
+ * @param Signature to verify
+ * @param Public key { n: Buffer, e: Buffer }
+ */
 static Handle<Value> VerifyRSASHA256(const Arguments &args) {
   HandleScope scope;
 
