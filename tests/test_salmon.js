@@ -18,13 +18,22 @@ Vows.describe('Salmon').addBatch({
 		},
 		'can be used to sign': {
 		    topic: function() {
-			var me = { data: 'Hello World',
-				   data_type: 'application/test' };
-			this.sig = Salmon.generateSignature(me, this.key.private);
+			this.me = { data: 'Hello World',
+				    data_type: 'application/test' };
+			this.sig = Salmon.generateSignature(this.me, this.key.private);
 			this.callback();
 		    },
 		    'signature generated': function() {
-			console.log(this.sig.length);
+			Assert.equal(this.sig.length, 256);
+		    },
+		    'can be verified': {
+			topic: function() {
+			    this.verified = Salmon.verifySignature(this.me, this.sig, this.key.public);
+			    this.callback();
+			},
+			'verification successful': function() {
+			    Assert.ok(this.verified);
+			}
 		    }
 		}
         }

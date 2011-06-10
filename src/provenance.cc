@@ -175,6 +175,68 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
   return scope.Close(sigResult);
 }
 
+static Handle<Value> VerifyRSASHA256(const Arguments &args) {
+  HandleScope scope;
+
+  if (args.Length() != 3) {
+      Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
+      return ThrowException(exception);
+  }
+  Handle<Value> m = args[0];
+  Handle<Value> sig = args[1];
+  Handle<Object> pubKey = args[2]->ToObject();
+
+  /* Prepare verification */
+  const EVP_MD *md = EVP_get_digestbyname("RSA-SHA256");
+  if (!md) {
+    Local<Value> exception = Exception::Error(String::New("No RSA-SHA256 message digest"));
+    return ThrowException(exception);
+  }
+  EVP_MD_CTX mdctx;
+  EVP_MD_CTX_init(&mdctx);
+  EVP_VerifyInit_ex(&mdctx, md, NULL);
+
+
+  /* Write data */
+  /* TODO: for buffers, this could be zero-copy */
+  ssize_t mLen = DecodeBytes(m);
+  char *mBuf = new char[mLen];
+  mLen = DecodeWrite(mBuf, mLen, m);
+  EVP_VerifyUpdate(&mdctx, mBuf, mLen);
+  delete[] mBuf;
+
+  /* Prepare key */
+  RSA *rsa = RSA_new();
+  Handle<Value> n = pubKey->Get(String::NewSymbol("n"));
+  rsa->n = binaryToBn(n);
+  Handle<Value> e = pubKey->Get(String::NewSymbol("e"));
+  rsa->e = binaryToBn(e);
+  EVP_PKEY *pkey = EVP_PKEY_new();
+  EVP_PKEY_set1_RSA(pkey, rsa);
+
+  /* Pass sig */
+  /* TODO: for buffers, this could be zero-copy */
+  ssize_t sigLen = DecodeBytes(sig);
+  char *sigBuf = new char[sigLen];
+  sigLen = DecodeWrite(sigBuf, sigLen, sig);
+  int status = EVP_VerifyFinal(&mdctx, (unsigned char *)sigBuf, sigLen, pkey);
+  delete[] sigBuf;
+
+  EVP_PKEY_free(pkey);
+
+  switch(status) {
+  case 1:
+    return scope.Close(True());
+    break;
+  case 0:
+    return scope.Close(False());
+    break;
+  default:
+    Local<Value> exception = Exception::Error(String::New("Verification error"));
+    return ThrowException(exception);
+  }
+}
+
 extern "C" void
 init (Handle<Object> target) 
 {
@@ -183,6 +245,7 @@ init (Handle<Object> target)
   OpenSSL_add_all_digests();
   OpenSSL_add_all_algorithms();
 
-  NODE_SET_METHOD(target, "signRSASHA256", SignRSASHA256);
   NODE_SET_METHOD(target, "generate", Generate);
+  NODE_SET_METHOD(target, "signRSASHA256", SignRSASHA256);
+  NODE_SET_METHOD(target, "verifyRSASHA256", VerifyRSASHA256);
 }
