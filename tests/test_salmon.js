@@ -20,6 +20,7 @@ Vows.describe('Salmon').addBatch({
 		    topic: function() {
 			this.me = { data: 'Hello World',
 				    data_type: 'application/test' };
+console.log({sign:[this.me,this.key.private]})
 			this.sig = Salmon.generateSignature(this.me, this.key.private);
 			this.callback();
 		    },
@@ -28,6 +29,7 @@ Vows.describe('Salmon').addBatch({
 		    },
 		    'can be verified': {
 			topic: function() {
+console.log({verify:[this.me,this.sig,this.key.public]})
 			    this.verified = Salmon.verifySignature(this.me, this.sig, this.key.public);
 			    this.callback();
 			},

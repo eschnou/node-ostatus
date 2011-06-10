@@ -74,10 +74,23 @@ static Handle<Value> bnToBinary(BIGNUM *bn) {
 }
 
 static BIGNUM *binaryToBn(Handle<Value> &bin) {
-  ssize_t len = DecodeBytes(bin);
-  unsigned char *buf = new unsigned char[len];
-  BIGNUM *result = BN_bin2bn(buf, len, NULL);
-  delete[] buf;
+  BIGNUM *result = NULL;
+
+  if (Buffer::HasInstance(bin)) {
+    /* Copy only once for Buffer */
+    Local<Object> buf = bin->ToObject();
+    result = BN_bin2bn((unsigned char *)Buffer::Data(buf), Buffer::Length(buf), NULL);
+
+  } else {
+    ssize_t len = DecodeBytes(bin);
+    if (len >= 0) {
+      unsigned char *buf = new unsigned char[len];
+      len = DecodeWrite((char *)buf, len, bin);
+      result = BN_bin2bn(buf, len, NULL);
+      delete[] buf;
+    }
+  }
+
   return result;
 }
 
@@ -181,6 +194,10 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
     Local<Value> exception = Exception::Error(String::New("Cannot sign"));
     return ThrowException(exception);
   }
+  printf("sig:");
+  for(int i=0; i < sigLen;i++)
+    printf(" %02X",sig[i]);
+  printf("\n");
   Handle<Value> sigResult = makeBuffer(sig, sigLen);
 
   EVP_PKEY_free(pkey);
@@ -203,7 +220,7 @@ static Handle<Value> VerifyRSASHA256(const Arguments &args) {
       return ThrowException(exception);
   }
   Handle<Value> m = args[0];
-  Handle<Value> sig = args[1];
+  Handle<Object> sig = args[1]->ToObject();
   Handle<Object> pubKey = args[2]->ToObject();
 
   /* Prepare verification */
@@ -235,12 +252,11 @@ static Handle<Value> VerifyRSASHA256(const Arguments &args) {
   EVP_PKEY_set1_RSA(pkey, rsa);
 
   /* Pass sig */
-  /* TODO: for buffers, this could be zero-copy */
-  ssize_t sigLen = DecodeBytes(sig);
-  char *sigBuf = new char[sigLen];
-  sigLen = DecodeWrite(sigBuf, sigLen, sig);
-  int status = EVP_VerifyFinal(&mdctx, (unsigned char *)sigBuf, sigLen, pkey);
-  delete[] sigBuf;
+  /*printf("vsig:");
+  for(int i=0; i < sigLen;i++)
+    printf(" %02X",sigBuf[i]);
+  printf("\n");*/
+  int status = EVP_VerifyFinal(&mdctx, (unsigned char *)Buffer::Data(sig), Buffer::Length(sig), pkey);
 
   EVP_PKEY_free(pkey);
 
