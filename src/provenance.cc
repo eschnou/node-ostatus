@@ -106,7 +106,7 @@ static Handle<Value> Generate(const Arguments &args) {
   BN_hex2bn(&bn_e, "10001");
 
   RSA *rsa = RSA_new(); 
-  int status = RSA_generate_key_ex(rsa, 1024, bn_e, NULL);
+  int status = RSA_generate_key_ex(rsa, 2048, bn_e, NULL);
   BN_free(bn_e);
   if (!status) {
       Local<Value> exception = Exception::Error(String::New("Cannot generate"));
@@ -135,37 +135,6 @@ static Handle<Value> Generate(const Arguments &args) {
 }
 
 /**
- * Do not forget freeing result BIO
- * @param k Modulus (n) byte count
- */
-static BIO *EMSA_PKCS1_v1_5(Handle<Object> m, int k) {
-  const int hashLen = 256 / 8;
-  const int prefixLen = 19;
-
-  BIO *result = BIO_new(BIO_s_mem());
-  BIO_write(result, "\x00\x01", 2);
-
-  /* padding */
-  for(int i = 0; i < k - (prefixLen + hashLen); i++)
-    BIO_write(result, "\xFF", 1);
-  BIO_write(result, "\x00", 1);
-
-  const char prefix[] = { 0x30, 0x31, 0x30, 0xd, 0x6, 0x9, 0x60, 0x86,
-                          0x48, 0x1, 0x65, 0x3, 0x4, 0x2, 0x1, 0x5,
-                          0x0, 0x4, 0x20 };
-  BIO_write(result, prefix, prefixLen);
-
-  SHA256_CTX sha;
-  SHA256_Init(&sha);
-  SHA256_Update(&sha, Buffer::Data(m), Buffer::Length(m));
-  unsigned char mDigest[hashLen];
-  SHA256_Final(mDigest, &sha);
-  BIO_write(result, mDigest, hashLen);
-
-  return result;
-}
-
-/**
  * @param {String or Buffer} Message
  * @param {String or Buffer} Private key in RSAPrivateKey format
  */
@@ -176,7 +145,7 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
       Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
       return ThrowException(exception);
   }
-  Handle<Object> m = args[0]->ToObject();
+  Handle<Value> m = args[0];
   Handle<Value> privKey = args[1];
 
   /* Prepare key */
@@ -187,31 +156,53 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
   }
 
   EVP_PKEY *pkey = PEM_read_bio_PrivateKey(bp, NULL, NULL, NULL);
-  if (!pkey || EVP_PKEY_type(pkey->type) != EVP_PKEY_RSA) {
+  if (!pkey) {
     Local<Value> exception = Exception::Error(String::New("Cannot read key"));
     return ThrowException(exception);
   }
+
   BIO_free(bp);
-  RSA *rsa = EVP_PKEY_get1_RSA(pkey);
 
   /* signing */
-  BIO *emsa = EMSA_PKCS1_v1_5(m, BN_num_bytes(rsa->n));
-  unsigned char *emsaData;
-  long emsaLen = BIO_get_mem_data(emsa, &emsaData);
+  const EVP_MD *md;
+  md = EVP_get_digestbyname("RSA-SHA256");
+  if (!md) {
+    EVP_PKEY_free(pkey);
 
-  int sigLen = RSA_size(rsa);
-  unsigned char sig[sigLen];
-  RSA_private_encrypt(emsaLen, emsaData, sig, rsa, RSA_NO_PADDING);
+    Local<Value> exception = Exception::Error(String::New("No RSA-SHA256 message digest"));
+    return ThrowException(exception);
+  }
 
-  BIO_free(emsa);
-  EVP_PKEY_free(pkey);
+  EVP_MD_CTX mdctx;
+  EVP_MD_CTX_init(&mdctx);
+  EVP_SignInit_ex(&mdctx, md, NULL);
 
-  /*printf("sig:");
+  /* TODO: for buffers, this could be zero-copy */
+  ssize_t mLen = DecodeBytes(m);
+  char *mBuf = new char[mLen];
+  mLen = DecodeWrite(mBuf, mLen, m);
+  EVP_SignUpdate(&mdctx, mBuf, mLen);
+  delete[] mBuf;
+
+  unsigned char *sig = new unsigned char[EVP_PKEY_size(pkey)];
+  unsigned int sigLen;
+  if (!EVP_SignFinal(&mdctx, sig, &sigLen, pkey)) {
+    EVP_PKEY_free(pkey);
+    delete[] sig;
+    EVP_MD_CTX_cleanup(&mdctx);
+
+    Local<Value> exception = Exception::Error(String::New("Cannot sign"));
+    return ThrowException(exception);
+  }
+  printf("sig:");
   for(int i=0; i < sigLen;i++)
     printf(" %02X",sig[i]);
-    printf("\n");*/
+  printf("\n");
   Handle<Value> sigResult = makeBuffer(sig, sigLen);
 
+  EVP_PKEY_free(pkey);
+  delete[] sig;
+  EVP_MD_CTX_cleanup(&mdctx);
 
   return scope.Close(sigResult);
 }
@@ -228,9 +219,28 @@ static Handle<Value> VerifyRSASHA256(const Arguments &args) {
       Local<Value> exception = Exception::TypeError(String::New("Bad argument"));
       return ThrowException(exception);
   }
-  Handle<Object> m = args[0]->ToObject();
+  Handle<Value> m = args[0];
   Handle<Object> sig = args[1]->ToObject();
   Handle<Object> pubKey = args[2]->ToObject();
+
+  /* Prepare verification */
+  const EVP_MD *md = EVP_get_digestbyname("RSA-SHA256");
+  if (!md) {
+    Local<Value> exception = Exception::Error(String::New("No RSA-SHA256 message digest"));
+    return ThrowException(exception);
+  }
+  EVP_MD_CTX mdctx;
+  EVP_MD_CTX_init(&mdctx);
+  EVP_VerifyInit_ex(&mdctx, md, NULL);
+
+
+  /* Write data */
+  /* TODO: for buffers, this could be zero-copy */
+  ssize_t mLen = DecodeBytes(m);
+  char *mBuf = new char[mLen];
+  mLen = DecodeWrite(mBuf, mLen, m);
+  EVP_VerifyUpdate(&mdctx, mBuf, mLen);
+  delete[] mBuf;
 
   /* Prepare key */
   RSA *rsa = RSA_new();
@@ -238,29 +248,17 @@ static Handle<Value> VerifyRSASHA256(const Arguments &args) {
   rsa->n = binaryToBn(n);
   Handle<Value> e = pubKey->Get(String::NewSymbol("e"));
   rsa->e = binaryToBn(e);
-
-  /* Prepare data */
-  BIO *emsa = EMSA_PKCS1_v1_5(m, BN_num_bytes(rsa->n));
-  unsigned char *emsaData;
-  long emsaLen = BIO_get_mem_data(emsa, &emsaData);
-
-  int rsigLen = RSA_size(rsa);
-  unsigned char rsig[rsigLen];
-  RSA_public_decrypt(emsaLen, emsaData, rsig, rsa, RSA_NO_PADDING);
-
-  BIO_free(emsa);
-  RSA_free(rsa);
+  EVP_PKEY *pkey = EVP_PKEY_new();
+  EVP_PKEY_set1_RSA(pkey, rsa);
 
   /* Pass sig */
-  printf("rsig:");
-  for(int i=0; i < rsigLen;i++)
-    printf(" %02X",rsig[i]);
-  printf("\n");
-  printf("vsig:");
-  for(int i=0; i < Buffer::Length(sig);i++)
-    printf(" %02X",((unsigned char *)Buffer::Data(sig))[i]);
-  printf("\n");
-  int status = 0;
+  /*printf("vsig:");
+  for(int i=0; i < sigLen;i++)
+    printf(" %02X",sigBuf[i]);
+  printf("\n");*/
+  int status = EVP_VerifyFinal(&mdctx, (unsigned char *)Buffer::Data(sig), Buffer::Length(sig), pkey);
+
+  EVP_PKEY_free(pkey);
 
   switch(status) {
   case 1:
