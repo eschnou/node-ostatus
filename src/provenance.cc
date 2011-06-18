@@ -155,12 +155,11 @@ static BIO *EMSA_PKCS1_v1_5(Handle<Object> m, int k) {
                           0x0, 0x4, 0x20 };
   BIO_write(result, prefix, prefixLen);
 
-  ssize_t mLen = DecodeBytes(m);
-  unsigned char *mBuf = new unsigned char[mLen];
-  printf("hashing %i bytes from %X\n", mLen, mBuf);
+  SHA256_CTX sha;
+  SHA256_Init(&sha);
+  SHA256_Update(&sha, Buffer::Data(m), Buffer::Length(m));
   unsigned char mDigest[hashLen];
-  SHA256(mBuf, mLen, mDigest);
-  delete[] mBuf;
+  SHA256_Final(mDigest, &sha);
   BIO_write(result, mDigest, hashLen);
 
   return result;
@@ -246,31 +245,22 @@ static Handle<Value> VerifyRSASHA256(const Arguments &args) {
   long emsaLen = BIO_get_mem_data(emsa, &emsaData);
 
   int rsigLen = RSA_size(rsa);
-  unsigned char rsigBuf[rsigLen];
-  RSA_public_decrypt(emsaLen, emsaData, rsigBuf, rsa, RSA_NO_PADDING);
+  unsigned char rsig[rsigLen];
+  RSA_public_decrypt(emsaLen, emsaData, rsig, rsa, RSA_NO_PADDING);
 
   BIO_free(emsa);
   RSA_free(rsa);
 
   /* Pass sig */
-  int sigLen = Buffer::Length(sig);
-  unsigned char *sigBuf = (unsigned char *)Buffer::Data(sig);
-
-  printf("rsig(%i):", rsigLen);
+  printf("rsig:");
   for(int i=0; i < rsigLen;i++)
-    printf(" %02X",rsigBuf[i]);
+    printf(" %02X",rsig[i]);
   printf("\n");
-  printf("sig(%i):", sigLen);
-  for(int i=0; i < sigLen;i++)
-    printf(" %02X",sigBuf[i]);
+  printf("vsig:");
+  for(int i=0; i < Buffer::Length(sig);i++)
+    printf(" %02X",((unsigned char *)Buffer::Data(sig))[i]);
   printf("\n");
-
-  int status = rsigLen == sigLen;
-  for(int i = 0; status && i < rsigLen; i++) {
-    if (sigBuf[i] != rsigBuf[i])
-      printf("%X != %X\n", sigBuf[i], rsigBuf[i]);
-    status &= sigBuf[i] == rsigBuf[i];
-  }
+  int status = 0;
 
   switch(status) {
   case 1:
