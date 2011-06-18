@@ -20,7 +20,6 @@ Vows.describe('Salmon').addBatch({
 		    topic: function() {
 			this.me = { data: 'Hello World',
 				    data_type: 'application/test' };
-console.log({sign:[this.me,this.key.private]})
 			this.sig = Salmon.generateSignature(this.me, this.key.private);
 			this.callback();
 		    },
@@ -29,7 +28,6 @@ console.log({sign:[this.me,this.key.private]})
 		    },
 		    'can be verified': {
 			topic: function() {
-console.log({verify:[this.me,this.sig,this.key.public]})
 			    this.verified = Salmon.verifySignature(this.me, this.sig, this.key.public);
 			    this.callback();
 			},
@@ -41,7 +39,8 @@ console.log({verify:[this.me,this.sig,this.key.public]})
         }
     },
 
-    'spec example': {
+    /* http://code.google.com/p/salmon-protocol/issues/detail?id=8 */
+    'invalid spec example': {
 	'should work': {
 		topic: function() {
 		    var pubKey = "RSA.mVgY8RN6URBTstndvmUUPb4UZTdwvwmddSKE5z_jvKUEK6yk1u3rrC9yN8k6FilGj9K0eeUPe2hf4Pj-5CmHww.AQAB";

@@ -194,10 +194,6 @@ static Handle<Value> SignRSASHA256(const Arguments &args) {
     Local<Value> exception = Exception::Error(String::New("Cannot sign"));
     return ThrowException(exception);
   }
-  printf("sig:");
-  for(int i=0; i < sigLen;i++)
-    printf(" %02X",sig[i]);
-  printf("\n");
   Handle<Value> sigResult = makeBuffer(sig, sigLen);
 
   EVP_PKEY_free(pkey);
@@ -252,10 +248,6 @@ static Handle<Value> VerifyRSASHA256(const Arguments &args) {
   EVP_PKEY_set1_RSA(pkey, rsa);
 
   /* Pass sig */
-  /*printf("vsig:");
-  for(int i=0; i < sigLen;i++)
-    printf(" %02X",sigBuf[i]);
-  printf("\n");*/
   int status = EVP_VerifyFinal(&mdctx, (unsigned char *)Buffer::Data(sig), Buffer::Length(sig), pkey);
 
   EVP_PKEY_free(pkey);
