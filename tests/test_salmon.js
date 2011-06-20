@@ -69,4 +69,8 @@ Vows.describe('Salmon').addBatch({
 	}
     }
 
+    /* More test cases can be found at:
+     * http://code.google.com/p/salmon-protocol/source/browse/trunk/lib/python/magicsig/magicsig_test.py
+     */
+
 }).run();
