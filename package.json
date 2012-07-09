@@ -7,12 +7,14 @@
 , "author": "Laurent Eschenauer <laurent@eschenauer.be> (http://eschnou.com)"
 , "bin" : { "status" : "./bin/status.js", "profile": "./bin/profile.js", "webfinger": "./bin/webfinger.js"}
 , "main" : "./lib/ostatus"
+, "scripts" : {
+    "install": "node-waf configure build"
+   ,"update": "node-waf build"
+}
 , "repository" : { "type": "git", "url": "https://github.com/eschnou/node-ostatus.git"}
 , "dependencies" : {
     "mu" 	: "http://github.com/raycmorgan/Mu/tarball/v2"
    ,"sax" 	: ">=0.1.2"
    ,"flow"	: "0.2.x"
-   ,"base64" : "2.0.x"
-   ,"bignumber" : "1.1.x"
   }
 }
