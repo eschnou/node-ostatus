@@ -1,36 +1,17 @@
-var assert = require('assert');
-var fs = require('fs');
-var path = require('path');
-var ostatus = require('ostatus');
-var input = fs.readFileSync(path.join(__dirname, 'test-salmon.input'), 'utf-8');
-var output = fs.readFileSync(path.join(__dirname, 'test-salmon.output'), 'utf-8');
+var assert=require('assert');
+var fs=require('fs');
+var path=require('path');
+var ostatus=require('ostatus');
 
-function test_unpack() {
-	ostatus.salmon.unpack(input, function(err, result) {
-		if (err) throw err; 
-		assert.equal(result.data, expected.data, "Salmon did not properly unpack 'data'");
-		assert.equal(result.encoding, expected.encoding, "Salmon did not properly unpack 'encoding'");
-		assert.equal(result.alg, expected.alg, "Salmon did not properly unpack 'alg'");
-		assert.equal(result.sigs[0].value, expected.sigs[0].value, "Salmon did not properly unpack 'sig'");
-		assert.equal(result.data_type, expected.data_type, "Salmon did not properly unpack 'data_type'");
-	});
+/*
+ * Test interoperability with a Status.net signed salmon magic enveloppe.
+ */
+
+function test(){
+	assert.ok(ostatus.salmon.verify_signature(me, key));
 }
 
-function test_decode() {
-	var decoded = ostatus.salmon.base64url_decode(expected.data);
-	assert.equal(decoded, output, "Base64 decoding did not provide expected result");
-}
-
-function test_encode() {
-	var encoded = ostatus.salmon.base64url_encode(output);
-	assert.equal(encoded, expected.data, "Based64 encoding did not provide expected result");
-}
-
-function test_verify() {
-	ostatus.salmon.verify_signature(expected, key);
-}
-
-var expected = { 
+var me = { 
 		sigs: [ 
 		        { value: 'UqKwh0XSOhdSD7U9nVHxB67sCNt8lQzkl5aPELQTfuhrlBoktbExhhkP4QGFg0WS0FgPnQpG24z5S4XIk2BTjI8My-VlwRWdeU72NtnLhZjz8EzA1aJTI_Drs71-YICuM_dLAJgo55pF4nIMkRN9KA-rS-y7oC3cwt01MknR8UQ=' } 
 		      ],
@@ -40,9 +21,7 @@ var expected = {
 	    alg: 'RSA-SHA256' 
 };
 
-var key = "RSA.wEcnhyKFkapxOf7ycAednRNk3zrt9Y4XUjZ2UAR00BcVmI3jhS0GehRzZhphMgVLsRQhKQ-GR11A1U1HtWQTlfghGUCHK9WBBheTOr3Fl-53lXqaWLefofaOk-WFa-KTw7Ke57EsOHG1fB2lHhhisWel646mmbn3B3WyYkEnE3s=.AQAB";
+var key = "RSA.xwUIPhP_nabY5OJ8Ka5T8n8lLnvvUb0DOzd08IniSVwt0AdIJsFmzGKOb6tVfF_IgaNWpWjyx_ek3aHV-U6AgkYcTxoLLaNkUrnHDQWfi6l2s3L9zhSCF9xlRIfWOkuaUARdNwteCWXS5rL82I8Bi1Z6zQ3ULI-OCsk7bRhl65M=.AQAB";
 
-test_unpack();
-test_decode();
-test_encode();
-test_verify();
+
+test();

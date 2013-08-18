@@ -6,6 +6,9 @@
  <link rel="alternate" href="http://{{host}}/users/{{username}}" type="text/html"/>
  <link rel="hub" href="http://{{host}}/push/hub" />
  <link rel="salmon" href="http://{{host}}/salmon/user/{{username}}" />
+ <link rel="mentioned" href="http://{{host}}/salmon/user/{{username}}" />
+ <link rel="http://salmon-protocol.org/ns/salmon-replies" href="http://{{host}}/salmon/user/{{username}}" />
+ <link rel="http://salmon-protocol.org/ns/salmon-mention" href="http://{{host}}/salmon/user/{{username}}" />
  <link rel="self" href="http://{{host}}/updates/{{username}}.atom" type="application/atom+xml"/> 
  <author>
   <name>{{fullname}}</name>

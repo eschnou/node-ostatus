@@ -9,9 +9,10 @@
 , "main" : "./lib/ostatus"
 , "repository" : { "type": "git", "url": "https://github.com/eschnou/node-ostatus.git"}
 , "dependencies" : {
-    "mu" 	: "http://files.eschnou.com/mu.tgz"
-   ,"o3-xml" 	: "http://files.eschnou.com/o3-xml.tgz"
+    "mu" 	: "http://github.com/raycmorgan/Mu/tarball/v2"
+   ,"sax" 	: ">=0.1.2"
    ,"flow"	: "0.2.x"
    ,"base64" : "2.0.x"
+   ,"bignumber" : "1.1.x"
   }
 }

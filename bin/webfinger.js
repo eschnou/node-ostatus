@@ -40,7 +40,9 @@ var _main = function(argv) {
 		
 		// Webfinger require acct: reference, we add if required
 		var reference = argv[2];
-		if (reference.length<5 || reference.substring(0,5) != "acct:") {
+		
+		// TODO this is not clean, if no prefix is provided, I should try to discover if it is a http or acct uri.
+		if (reference.length<5 || (reference.substring(0,5) != "acct:" && reference.substring(0,5) != "http:")) {
 			reference = "acct:" + reference;
 		}
 		Webfinger.lookup(reference, _result);
